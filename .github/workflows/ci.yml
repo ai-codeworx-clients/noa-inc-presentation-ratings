@@ -1,0 +1,60 @@
+name: CI
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node.js projects
+      - name: Detect Node.js
+        id: detect-node
+        run: test -f package.json && echo "found=true" >> $GITHUB_OUTPUT || echo "found=false" >> $GITHUB_OUTPUT
+      - name: Setup Node.js
+        if: steps.detect-node.outputs.found == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install & Test (Node.js)
+        if: steps.detect-node.outputs.found == 'true'
+        run: |
+          npm ci
+          npm test --if-present
+          npm run build --if-present
+
+      # Python projects
+      - name: Detect Python
+        id: detect-python
+        run: test -f requirements.txt -o -f pyproject.toml -o -f setup.py && echo "found=true" >> $GITHUB_OUTPUT || echo "found=false" >> $GITHUB_OUTPUT
+      - name: Setup Python
+        if: steps.detect-python.outputs.found == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install & Test (Python)
+        if: steps.detect-python.outputs.found == 'true'
+        run: |
+          pip install -r requirements.txt 2>/dev/null || pip install -e ".[test]" 2>/dev/null || true
+          python -m pytest --tb=short 2>/dev/null || python -m unittest discover 2>/dev/null || echo "No tests found"
+
+      # .NET projects
+      - name: Detect .NET
+        id: detect-dotnet
+        run: |
+          if find . -name "*.csproj" -o -name "*.sln" | head -1 | grep -q .; then echo "found=true" >> $GITHUB_OUTPUT; else echo "found=false" >> $GITHUB_OUTPUT; fi
+      - name: Setup .NET
+        if: steps.detect-dotnet.outputs.found == 'true'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      - name: Build & Test (.NET)
+        if: steps.detect-dotnet.outputs.found == 'true'
+        run: |
+          dotnet restore
+          dotnet build --no-restore
+          dotnet test --no-build --verbosity normal

@@ -10,7 +10,7 @@
 - **Tests:** Vitest 2
 - **Package manager:** pnpm 10
 - **Storage:** browser `localStorage` — no backend
-- **Deployment:** static site (GitHub Pages / Netlify / Vercel)
+- **Deployment:** GitHub Pages — `https://ai-codeworx-clients.github.io/noa-inc-presentation-ratings/`
 
 ## Build & Run
 ```bash
@@ -36,7 +36,18 @@ tests/
   utils.test.js          # unit tests for escHtml and sort logic
 dist/                    # production build output (git-ignored)
 pnpm-lock.yaml           # lockfile — commit this, not package-lock.json
+.github/workflows/
+  ci.yml                 # CI: runs pnpm test + pnpm build on push/PR
+  deploy.yml             # Deploys dist/ to GitHub Pages on push to main
+  approve-pr.yml         # Lead architect PR approval workflow
 ```
+
+## Deployment
+- **URL:** https://ai-codeworx-clients.github.io/noa-inc-presentation-ratings/
+- **Provider:** GitHub Pages (free tier, no server needed)
+- **Trigger:** Automatic on push to `main` via `.github/workflows/deploy.yml`
+- **Build:** `pnpm build` → `dist/` → uploaded as Pages artifact
+- **Base path:** Vite `base: "./"` ensures relative asset paths work at any subdirectory
 
 ## Testing
 - Test framework: **Vitest 2** (`pnpm test`)

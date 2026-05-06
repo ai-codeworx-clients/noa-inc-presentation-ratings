@@ -1,0 +1,23 @@
+name: Approve and Merge PR
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number to approve and merge
+        required: true
+permissions:
+  pull-requests: write
+  contents: write
+jobs:
+  approve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Approve PR
+        run: gh pr review ${{ github.event.inputs.pr_number }} --approve --body "Approved by Lead Architect via Code Conductor"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Merge PR
+        run: gh pr merge ${{ github.event.inputs.pr_number }} --squash --delete-branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

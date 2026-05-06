@@ -1,0 +1,18 @@
+{
+  "name": "noa-inc-presentation-ratings",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "fsevents"]
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "vitest": "^2.1.0"
+  }
+}

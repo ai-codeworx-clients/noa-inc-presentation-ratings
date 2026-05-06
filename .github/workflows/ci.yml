@@ -14,14 +14,27 @@ jobs:
       - name: Detect Node.js
         id: detect-node
         run: test -f package.json && echo "found=true" >> $GITHUB_OUTPUT || echo "found=false" >> $GITHUB_OUTPUT
+      - name: Detect pnpm lockfile
+        id: detect-pnpm
+        run: test -f pnpm-lock.yaml && echo "found=true" >> $GITHUB_OUTPUT || echo "found=false" >> $GITHUB_OUTPUT
+      - name: Setup pnpm
+        if: steps.detect-pnpm.outputs.found == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Setup Node.js
         if: steps.detect-node.outputs.found == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-      - name: Install & Test (Node.js)
-        if: steps.detect-node.outputs.found == 'true'
+      - name: Install & Test (pnpm)
+        if: steps.detect-node.outputs.found == 'true' && steps.detect-pnpm.outputs.found == 'true'
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm test --if-present
+          pnpm build --if-present
+      - name: Install & Test (npm)
+        if: steps.detect-node.outputs.found == 'true' && steps.detect-pnpm.outputs.found != 'true'
         run: |
           npm ci
           npm test --if-present

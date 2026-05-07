@@ -407,6 +407,63 @@
       margin-top: 2px;
     }
 
+    /* ─── Edit name button ─── */
+    .edit-name-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #9CA3AF;
+      padding: 0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      transition: color 0.1s, background 0.1s;
+    }
+    .edit-name-btn:hover { color: #3B82F6; background: #EFF6FF; }
+    .student-card.rated .edit-name-btn:hover { background: #D1FAE5; }
+    .edit-name-btn:focus-visible { outline: 2px solid #3B82F6; outline-offset: 2px; }
+
+    /* ─── Text input (single-line) ─── */
+    .text-input {
+      width: 100%;
+      padding: 12px;
+      border: 1.5px solid #D1D5DB;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #111827;
+      background: #ffffff;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .text-input::placeholder { color: #9CA3AF; }
+    .text-input:focus {
+      outline: none;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+    .text-input.input-error {
+      border-color: #EF4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    }
+
+    /* ─── Reset name button ─── */
+    .reset-name-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      color: #9CA3AF;
+      font-family: inherit;
+      padding: 8px 0 0;
+      text-decoration: underline;
+      display: block;
+    }
+    .reset-name-btn:hover { color: #6B7280; }
+
     /* ─── Print styles ─── */
     @media print {
       .btn-ghost,

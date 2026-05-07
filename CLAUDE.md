@@ -52,13 +52,13 @@ pnpm-lock.yaml           # lockfile — commit this, not package-lock.json
 ## Testing
 - Test framework: **Vitest 2** (`pnpm test`)
 - Test environment: Node (no jsdom needed — storage uses injectable store, utils are pure)
-- 43 tests across roster, storage, and utility modules
+- 53 tests across roster, storage, and utility modules
 - Tests must pass before opening a pull request
 - CI runs automatically on every push and PR
 
 ## Conventions
-- All student names configured in `src/roster.js` — no admin UI needed
-- Storage key: `noa_presentation_ratings` in `localStorage`
+- Default student names configured in `src/roster.js`; custom names override defaults and are stored in localStorage under `noa_participant_names`
+- Storage key: `noa_presentation_ratings` (ratings), `noa_participant_names` (custom names) in `localStorage`
 - `storage.js` functions accept optional `store` param for testing (defaults to `localStorage`)
 - Event handling uses `data-action` attribute delegation — no inline onclick attributes
 - XSS prevention: all user-visible strings go through `escHtml()` before innerHTML insertion

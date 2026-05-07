@@ -5,6 +5,9 @@ import {
   getRating,
   countRated,
   clearRatings,
+  loadNames,
+  saveName,
+  clearNames,
 } from '../src/storage.js';
 
 function createMockStore() {
@@ -139,5 +142,80 @@ describe('clearRatings', () => {
     const store = createMockStore();
     expect(() => clearRatings(store)).not.toThrow();
     expect(loadRatings(store)).toEqual({});
+  });
+});
+
+describe('loadNames', () => {
+  test('returns empty object when nothing is stored', () => {
+    const store = createMockStore();
+    expect(loadNames(store)).toEqual({});
+  });
+
+  test('returns empty object when stored value is invalid JSON', () => {
+    const store = createMockStore();
+    store.setItem('noa_participant_names', 'not-valid{{{');
+    expect(loadNames(store)).toEqual({});
+  });
+
+  test('returns parsed names object', () => {
+    const store = createMockStore();
+    const data = { 'emma-johnson': 'Emma J.' };
+    store.setItem('noa_participant_names', JSON.stringify(data));
+    expect(loadNames(store)).toEqual(data);
+  });
+});
+
+describe('saveName', () => {
+  test('stores a custom name for a student', () => {
+    const store = createMockStore();
+    saveName('liam-smith', 'Liam S.', store);
+    expect(loadNames(store)['liam-smith']).toBe('Liam S.');
+  });
+
+  test('overwrites an existing custom name', () => {
+    const store = createMockStore();
+    saveName('noah-brown', 'Noah B.', store);
+    saveName('noah-brown', 'Noah Brown Jr.', store);
+    expect(loadNames(store)['noah-brown']).toBe('Noah Brown Jr.');
+  });
+
+  test('stores multiple names without clobbering each other', () => {
+    const store = createMockStore();
+    saveName('student-a', 'Alice', store);
+    saveName('student-b', 'Bob', store);
+    const names = loadNames(store);
+    expect(names['student-a']).toBe('Alice');
+    expect(names['student-b']).toBe('Bob');
+    expect(Object.keys(names)).toHaveLength(2);
+  });
+
+  test('deletes the entry when name is empty string', () => {
+    const store = createMockStore();
+    saveName('emma-johnson', 'Emmy', store);
+    saveName('emma-johnson', '', store);
+    expect(loadNames(store)['emma-johnson']).toBeUndefined();
+  });
+
+  test('deletes the entry when name is falsy', () => {
+    const store = createMockStore();
+    saveName('ava-jones', 'Ava J.', store);
+    saveName('ava-jones', null, store);
+    expect(loadNames(store)['ava-jones']).toBeUndefined();
+  });
+});
+
+describe('clearNames', () => {
+  test('removes all saved names', () => {
+    const store = createMockStore();
+    saveName('a', 'Alice', store);
+    saveName('b', 'Bob', store);
+    clearNames(store);
+    expect(loadNames(store)).toEqual({});
+  });
+
+  test('is a no-op when there are no names', () => {
+    const store = createMockStore();
+    expect(() => clearNames(store)).not.toThrow();
+    expect(loadNames(store)).toEqual({});
   });
 });
